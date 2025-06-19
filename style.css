@@ -1238,66 +1238,65 @@ body {
 
 .floating-story-card {
     position: relative;
-    width: 270px;
-    min-height: 220px;
-    padding: 18px 12px 12px 12px;
-    overflow: visible;
-    border: 2.5px solid #b3c6e0;
-    border-radius: 22px;
-    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10), 0 1.5px 6px rgba(44, 62, 80, 0.08);
-    background: #fafdff;
+    width: 340px;
+    height: auto;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    padding: 0;
+    overflow: hidden;
 }
+
 .card-image {
-    position: absolute;
-    top: -65px;
-    left: -65px;
-    width: 130px !important;
-    height: 130px !important;
-    min-width: 130px !important;
-    min-height: 130px !important;
-    max-width: 130px !important;
-    max-height: 130px !important;
-    object-fit: cover !important;
+    width: 120px;
+    height: 120px;
+    margin-top: 32px;
+    margin-bottom: 18px;
     border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     border: 2px solid #fff;
     background: #e6f0fa;
-    z-index: 2;
+    display: block;
 }
+
 .card-text-overlay {
-    padding-top: 60px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-bottom: 18px;
+    width: 100%;
+    padding: 0 20px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
     background: none;
 }
+
 .card-category {
-    font-size: 1.05em;
+    font-size: 0.9em;
     font-weight: 700;
     letter-spacing: 0.5px;
-    margin-bottom: 2px;
-    color: #4a90e2 !important;
+    color: #333;
 }
+
 .card-title {
-    font-size: 1.18em !important;
-    font-weight: 800 !important;
-    color: #222 !important;
-    margin-bottom: 6px;
-    line-height: 1.25 !important;
-    letter-spacing: 0.2px;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
 }
+
 .card-details {
-    font-size: 1em;
-    font-weight: 400;
-    color: #444;
+    font-size: 0.85em;
     line-height: 1.5;
-    margin-bottom: 0;
-    letter-spacing: 0.1px;
-    word-break: break-word;
+    color: #666;
+    text-align: center;
 }
 
 .floating-story-card:hover {
@@ -1382,24 +1381,24 @@ body {
 }
 
 .bg-circle-1 {
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     top: 10%;
-    left: -50px;
+    left: -30px;
     animation-delay: 0s;
 }
 
 .bg-circle-2 {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     top: 70%;
-    right: -30px;
+    right: -20px;
     animation-delay: 5s;
 }
 
 .bg-circle-3 {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     top: 40%;
     right: 20%;
     animation-delay: 10s;
@@ -1665,6 +1664,21 @@ body {
     .video-container {
         max-width: 100vw;
         padding-bottom: 56.25%;
+    }
+    .floating-story-card {
+        min-height: 220px;
+        padding: 0;
+        margin-bottom: 12px;
+    }
+    .card-image {
+        width: 70px;
+        height: 70px;
+        margin-top: 16px;
+        margin-bottom: 10px;
+    }
+    .card-text-overlay {
+        gap: 6px;
+        padding: 0 8px 10px 8px;
     }
 }
 
@@ -2057,11 +2071,11 @@ body {
     flex-direction: column;
     align-items: center;
     background: #f5f3f0;
-    padding: 40px 0 20px 0;
+    padding: 40px 0 60px 0;
     gap: 0;
     min-height: auto;
     margin-bottom: 0 !important;
-    padding-bottom: 20px !important;
+    padding-bottom: 60px !important;
 }
 
 .vs-cards-wrapper {
@@ -2177,7 +2191,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 48px;
-    padding: 32px 0;
+    padding: 32px 0 48px 0;
   }
   .vs-profile-card {
     width: 95vw;
@@ -2628,10 +2642,11 @@ body {
 .floating-cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 340px);
-    grid-auto-rows: min-content;
+    grid-auto-rows: 420px;
     gap: 40px 24px;
     justify-content: center;
     align-content: start;
+    padding-top: 20px;
     min-width: 320px;
     height: auto;
     max-height: none;
@@ -2640,14 +2655,14 @@ body {
 
 .floating-cards-grid .floating-story-card {
     width: 340px;
-    min-height: 180px;
-    padding: 16px 16px 16px 16px;
+    height: 420px;
+    padding: 16px;
     border-radius: 14px;
     font-size: 1em;
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    overflow: visible;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
 .card-title, .card-content, .card-text-overlay {
@@ -2966,22 +2981,10 @@ body {
     width: 100% !important;
     justify-content: center !important;
   }
-  .floating-cards-grid .floating-story-card {
+  .floating-story-card {
     width: 95vw !important;
     min-width: 0 !important;
     max-width: 100vw !important;
-    padding: 18px 4vw 12px 4vw !important;
-    border-radius: 16px !important;
-  }
-  .card-image {
-    width: 90px !important;
-    height: 90px !important;
-    min-width: 90px !important;
-    min-height: 90px !important;
-    max-width: 90px !important;
-    max-height: 90px !important;
-    left: 10px !important;
-    top: -40px !important;
   }
 }
 @media (max-width: 600px) {
@@ -3667,5 +3670,93 @@ img, video, iframe {
   .embedded-video iframe, .embedded-video video {
       max-width: 600px;
       height: 340px;
+  }
+}
+
+@media (min-width: 900px) {
+  .team-section .team-flex-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 32px !important;
+  }
+  .floating-cards-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 40px !important;
+    width: 100% !important;
+  }
+  .floating-cards-right {
+    width: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .embedded-video {
+    margin-top: 24px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .floating-story-card {
+    width: 90vw !important;
+    min-width: 0 !important;
+    max-width: 98vw !important;
+    min-height: 120px;
+    padding: 0;
+    margin-bottom: 8px;
+    border-radius: 10px;
+  }
+  .card-image {
+    width: 44px;
+    height: 44px;
+    margin-top: 8px;
+    margin-bottom: 6px;
+  }
+  .card-text-overlay {
+    gap: 2px;
+    padding: 0 4px 6px 4px;
+  }
+  .card-category, .card-title, .card-details {
+    font-size: 0.8em !important;
+    line-height: 1.2 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .floating-cards-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    grid-auto-rows: min-content !important;
+  }
+  .floating-story-card {
+    width: 90vw !important;
+    min-width: 0 !important;
+    max-width: 98vw !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0;
+    margin-bottom: 8px;
+    border-radius: 10px;
+  }
+  .card-image {
+    width: 44px;
+    height: 44px;
+    margin-top: 8px;
+    margin-bottom: 6px;
+  }
+  .card-text-overlay {
+    gap: 2px;
+    padding: 0 4px 6px 4px;
+  }
+  .card-category, .card-title, .card-details {
+    font-size: 0.8em !important;
+    line-height: 1.2 !important;
   }
 }
