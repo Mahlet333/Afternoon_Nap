@@ -2057,11 +2057,11 @@ body {
     flex-direction: column;
     align-items: center;
     background: #f5f3f0;
-    padding: 60px 0;
+    padding: 40px 0 20px 0;
     gap: 0;
-    min-height: 160vh;
+    min-height: auto;
     margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
+    padding-bottom: 20px !important;
 }
 
 .vs-cards-wrapper {
@@ -2072,6 +2072,8 @@ body {
     width: 100%;
     max-width: none;
     gap: 40px;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .vs-profile-card {
@@ -2119,7 +2121,7 @@ body {
   border-bottom-left-radius: 48px;
   border-bottom-right-radius: 48px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-  padding: 56px 36px 40px 36px;
+  padding: 40px 36px 24px 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3658,5 +3660,12 @@ img, video, iframe {
     min-height: 120px !important;
     max-width: 120px !important;
     max-height: 120px !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .embedded-video iframe, .embedded-video video {
+      max-width: 600px;
+      height: 340px;
   }
 }
