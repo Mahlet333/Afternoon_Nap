@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // YouTube video IDs for each branch with approximate durations (in seconds)
 const YOUTUBE_IDS = {
-    '1': 'Ue-5AZW6b30',
+    '1': 'sCL9Gc9D5yI',
     '2': 'ysCBlvdt0vo',
     '3': 'p3rQxfnS2Lk',
     '4': 'QhK4EHCOcsE'
@@ -224,11 +224,6 @@ const VIDEO_DURATIONS = {
 function setVideoSource(iframe, videoId) {
     currentVideoId = videoId;
     
-    // Clear any existing timer
-    if (window.videoEndTimer) {
-        clearTimeout(window.videoEndTimer);
-    }
-    
     if (youtubePlayer && youtubePlayer.loadVideoById) {
         // Use YouTube API if available
         youtubePlayer.loadVideoById(videoId);
@@ -236,13 +231,6 @@ function setVideoSource(iframe, videoId) {
         // Fallback to changing iframe src directly
         iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
     }
-    
-    // Set fallback timer for video end detection
-    const duration = VIDEO_DURATIONS[videoId] || 30;
-    window.videoEndTimer = setTimeout(() => {
-        console.log('Fallback timer triggered for video:', videoId);
-        onVideoEnded();
-    }, (duration + 2) * 1000); // Add 2 seconds buffer
 }
 
 // --- Refactored Interactive Video Player Logic for YouTube ---
@@ -307,9 +295,11 @@ function onPlayerReady(event) {
 }
 
 function onYouTubePlayerStateChange(event) {
-    // 0 = ended
+    // YT.PlayerState.ENDED = 0
+    // YT.PlayerState.PLAYING = 1
+    // YT.PlayerState.PAUSED = 2
     if (event.data === YT.PlayerState.ENDED) {
-        console.log('Video ended, current video ID:', currentVideoId);
+        console.log('Video ended naturally, current video ID:', currentVideoId);
         onVideoEnded();
     }
 }
@@ -323,6 +313,7 @@ function onVideoEnded() {
         } else if (currentBranch === 'clean' && currentVideoId === YOUTUBE_IDS['2']) {
             playFinalBranchVideo();
         } else if (currentVideoId === YOUTUBE_IDS['4']) {
+            // Only show restart button when 4.MOV actually ends
             showRestartButton();
         }
     } else if (storyState === 'waitTextHer') {
@@ -348,7 +339,12 @@ function showChoiceArea() {
         </div>
     `;
     choiceArea.style.display = 'block';
-    backButton.style.display = 'block';
+    // Only show back button if not at the initial choice (i.e., if storyHistory has at least one step)
+    if (storyHistory.length > 0) {
+        backButton.style.display = 'block';
+    } else {
+        backButton.style.display = 'none';
+    }
     videoTitle.textContent = 'What would you do?';
     storyState = 'choice';
     // Do not push to history here, let makeChoice handle it
@@ -362,7 +358,7 @@ function makeChoice(choice) {
     choiceArea.style.display = 'none';
     backButton.style.display = 'block';
     storyState = 'final';
-    storyHistory.push('final');
+    storyHistory.push({ step: 'final', branch: choice });
     currentBranch = choice;
     // Set video source for branch
     if (choice === 'text') {
@@ -377,9 +373,14 @@ function makeChoice(choice) {
 function playFinalBranchVideo() {
     const iframe = document.getElementById('storyVideo');
     const videoTitle = document.getElementById('videoTitle');
+    // Push a special step for 4.MOV so we can distinguish in goBack
+    storyHistory.push({ step: 'final4', branch: currentBranch });
     setVideoSource(iframe, YOUTUBE_IDS['4']);
     videoTitle.textContent = 'The story continues...';
     storyState = 'final';
+    // Ensure back button is visible and restartSection is hidden while 4.MOV is playing
+    document.getElementById('restartSection').style.display = 'none';
+    document.getElementById('backButton').style.display = 'block';
     // Wait for video to end (handled by YouTube event)
 }
 
@@ -465,8 +466,9 @@ function showRestartButton() {
     const restartSection = document.getElementById('restartSection');
     const backButton = document.getElementById('backButton');
     const videoTitle = document.getElementById('videoTitle');
-    restartSection.style.display = 'block';
+    // Hide back button first, then show restart button
     backButton.style.display = 'none';
+    restartSection.style.display = 'block';
     videoTitle.textContent = 'Want to try again?';
     storyState = 'complete';
     storyHistory.push('complete');
@@ -479,36 +481,46 @@ function goBack() {
     const backButton = document.getElementById('backButton');
     const videoTitle = document.getElementById('videoTitle');
     // Remove the current step
-    storyHistory.pop();
-    // If no history, restart to the beginning (show choice after 1.mov)
-    if (storyHistory.length === 0) {
-        setVideoSource(iframe, YOUTUBE_IDS['1']);
-        videoTitle.textContent = 'What would you do?';
-        choiceArea.style.display = 'block';
-        restartSection.style.display = 'none';
-        backButton.style.display = 'block';
+    const lastStep = storyHistory.pop();
+
+    // Always check where back is clicked from
+    if (currentVideoId === YOUTUBE_IDS['4']) {
+        // Back from 4.MOV: go to previous branch video (2.MOV or 3.MOV), do NOT show overlay
+        const prevStep = storyHistory[storyHistory.length - 1];
+        if (prevStep && prevStep.step === 'final') {
+            if (prevStep.branch === 'text') {
+                setVideoSource(iframe, YOUTUBE_IDS['3']);
+            } else if (prevStep.branch === 'clean') {
+                setVideoSource(iframe, YOUTUBE_IDS['2']);
+            }
+            choiceArea.style.display = 'none';
+            restartSection.style.display = 'none';
+            backButton.style.display = 'block';
+            videoTitle.textContent = 'The story continues...';
+            storyState = 'final';
+            return;
+        }
+    }
+    if (currentVideoId === YOUTUBE_IDS['3'] || currentVideoId === YOUTUBE_IDS['2']) {
+        // Back from 2.MOV or 3.MOV: show the decision overlay (do NOT play 1.MOV)
+        if (youtubePlayer && youtubePlayer.stopVideo) youtubePlayer.stopVideo();
         showChoiceArea();
-        storyState = 'choice';
-        currentBranch = null;
+        restartSection.style.display = 'none';
         return;
     }
-    // Get the previous step
-    const prevStep = storyHistory[storyHistory.length - 1];
-    if (prevStep === 'choice') {
-        // Only show choice after 1.mov if it's the very first step
-        setVideoSource(iframe, YOUTUBE_IDS['1']);
-        videoTitle.textContent = 'What would you do?';
-        choiceArea.style.display = 'block';
-        restartSection.style.display = 'none';
-        backButton.style.display = 'block';
+    // If no history, just show the initial choice (no back button)
+    if (!storyHistory.length) {
+        if (youtubePlayer && youtubePlayer.stopVideo) youtubePlayer.stopVideo();
         showChoiceArea();
-        storyState = 'choice';
-        currentBranch = null;
-    } else if (prevStep === 'final') {
-        // Go back to the previous branch video
-        if (currentBranch === 'text') {
+        restartSection.style.display = 'none';
+        return;
+    }
+    // Fallback: default to previous logic
+    const prevStep = storyHistory[storyHistory.length - 1];
+    if (prevStep && prevStep.step === 'final4') {
+        if (prevStep.branch === 'text') {
             setVideoSource(iframe, YOUTUBE_IDS['3']);
-        } else if (currentBranch === 'clean') {
+        } else if (prevStep.branch === 'clean') {
             setVideoSource(iframe, YOUTUBE_IDS['2']);
         }
         choiceArea.style.display = 'none';
@@ -516,22 +528,41 @@ function goBack() {
         backButton.style.display = 'block';
         videoTitle.textContent = 'The story continues...';
         storyState = 'final';
-    } else if (prevStep === 'waitTextHer') {
-        // Go back to 2.mov (for the clean branch)
+    } else if (prevStep && prevStep.step === 'final') {
+        if (storyHistory.length === 1) {
+            if (youtubePlayer && youtubePlayer.stopVideo) youtubePlayer.stopVideo();
+            showChoiceArea();
+            restartSection.style.display = 'none';
+        } else {
+            if (prevStep.branch === 'text') {
+                setVideoSource(iframe, YOUTUBE_IDS['3']);
+            } else if (prevStep.branch === 'clean') {
+                setVideoSource(iframe, YOUTUBE_IDS['2']);
+            }
+            choiceArea.style.display = 'none';
+            restartSection.style.display = 'none';
+            backButton.style.display = 'block';
+            videoTitle.textContent = 'The story continues...';
+            storyState = 'final';
+        }
+    } else if (prevStep && prevStep.step === 'waitTextHer') {
         setVideoSource(iframe, YOUTUBE_IDS['2']);
         choiceArea.style.display = 'none';
         restartSection.style.display = 'none';
         backButton.style.display = 'block';
         videoTitle.textContent = 'The story continues...';
         storyState = 'final';
-    } else if (prevStep === 'complete') {
-        // Go back to 4.mov
+    } else if (prevStep && prevStep.step === 'complete') {
         setVideoSource(iframe, YOUTUBE_IDS['4']);
         choiceArea.style.display = 'none';
         restartSection.style.display = 'none';
         backButton.style.display = 'block';
         videoTitle.textContent = 'The story continues...';
         storyState = 'final';
+    } else {
+        if (youtubePlayer && youtubePlayer.stopVideo) youtubePlayer.stopVideo();
+        showChoiceArea();
+        restartSection.style.display = 'none';
     }
 }
 
